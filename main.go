@@ -6,10 +6,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
-	"unicode"
 
-	"github.com/mozillazg/go-pinyin"
+	pycore "github.com/muzimu/py/py"
 	"github.com/spf13/cobra"
 )
 
@@ -47,17 +45,20 @@ func run(cmd *cobra.Command, args []string) error {
 		lower = false
 	}
 
-	a := pinyin.NewArgs()
-	a.Style = pinyin.FirstLetter
-
 	scanner := bufio.NewScanner(os.Stdin)
 	// 支持大输入场景，设置 1MB 缓冲区
 	buf := make([]byte, 1024*1024)
 	scanner.Buffer(buf, len(buf))
 
+	opts := pycore.Options{
+		Upper:      upper,
+		Lower:      lower,
+		KeepNonHan: keepNonHan,
+	}
+
 	for scanner.Scan() {
 		line := scanner.Text()
-		result := convertLine(line, a)
+		result := pycore.ConvertLine(line, opts)
 		fmt.Println(result)
 	}
 
@@ -67,30 +68,4 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
-}
-
-// convertLine 将一行文本中的汉字转换为拼音首字母
-func convertLine(line string, a pinyin.Args) string {
-	var sb strings.Builder
-
-	for _, r := range line {
-		if unicode.Is(unicode.Han, r) {
-			// 汉字：转换为拼音首字母
-			p := pinyin.SinglePinyin(r, a)
-			if len(p) > 0 && len(p[0]) > 0 {
-				letter := string(p[0][0])
-				if upper {
-					letter = strings.ToUpper(letter)
-				} else {
-					letter = strings.ToLower(letter)
-				}
-				sb.WriteString(letter)
-			}
-		} else if keepNonHan {
-			// 非汉字：根据配置决定是否保留
-			sb.WriteRune(r)
-		}
-	}
-
-	return sb.String()
 }

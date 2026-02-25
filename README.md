@@ -13,24 +13,30 @@
 
 ### 一键安装
 
-在项目目录下执行：
+推荐直接从 GitHub 安装最新版本：
+
+```bash
+go install github.com/muzimu/py@latest
+```
+
+也可以在项目目录本地安装：
 
 ```bash
 go install .
 ```
 
-安装后 `py` 即可在任意目录全局使用。
-
 ### 验证安装
 
 ```bash
-which py        # 应输出 /Users/<你的用户名>/go/bin/py
+which py
 echo "测试" | py
 ```
 
 ---
 
 ## 用法
+
+默认命令名：
 
 ```bash
 echo "<汉字文本>" | py [选项]

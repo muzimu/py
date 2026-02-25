@@ -1,4 +1,4 @@
-module py
+module github.com/muzimu/py
 
 go 1.18
 
